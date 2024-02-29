@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { createBot, MemoryDB, createProvider } from '@bot-whatsapp/bot'
-import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
+import { BaileysProvider, handleCtx } from '@bot-whatsapp/provider-baileys'
 
 import AIClass from './services/ai';
 import flow from './flows';
@@ -9,8 +9,7 @@ import { getInitSettings } from './make';
 const ai = new AIClass(process.env.OPEN_API_KEY, 'gpt-3.5-turbo-16k')
 const PORT = process.env.PORT ?? 3001
 
-const main = async () => {
-    const prompts = await getInitSettings()
+const main = async (prompts: string) => {
     const provider = createProvider(BaileysProvider)
 
     await createBot({
@@ -19,10 +18,17 @@ const main = async () => {
         flow,
     }, { extensions: { ai, prompts } })
 
-
     provider.initHttpServer(+PORT)
-    console.log(`[Escanear QR] http://localhost:3000`)
+
+    provider.http.server.post('/message', handleCtx(async (bot, req, res) => {
+        const body = req.body
+        const number = body.number
+        const message = body.message
+        await bot.sendMessage(number, message, {})
+        return res.end('send')
+    }))
+
 
 }
 
-main()
+getInitSettings().then(main)
