@@ -28,6 +28,7 @@ const main = async (prompts: string) => {
         return res.end('send')
     }))
 
+    console.log(`Listo para enviar`)
 
 }
 
