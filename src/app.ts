@@ -33,3 +33,4 @@ const main = async (prompts: string) => {
 }
 
 getInitSettings().then(main)
+

@@ -4,6 +4,7 @@ import { getHistoryParse, handleHistory } from "../utils/handleHistory";
 import { generateTimer } from "../utils/generateTimer";
 import { getCurrentCalendar } from "../services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
+import { typing } from "src/utils/composing";
 
 const PROMPT_SCHEDULE = `
 Como ingeniero de inteligencia artificial especializado en la programación de reuniones, tu objetivo es analizar la conversación y determinar la intención del cliente de programar una reunión, así como su preferencia de fecha y hora. La reunión durará aproximadamente 45 minutos y solo puede ser programada entre las 9am y las 4pm, de lunes a viernes, y solo para la semana en curso.
@@ -45,14 +46,14 @@ const generateSchedulePrompt = (summary: string, history: string, prompt: string
 /**
  * Hable sobre todo lo referente a agendar citas, revisar historial saber si existe huecos disponibles
  */
-const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extensions, state, flowDynamic }) => {
+const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extensions, state, flowDynamic, provider }) => {
     await flowDynamic('dame un momento para consultar la agenda...')
     const ai = extensions.ai as AIClass
     const prompts = extensions.prompts
     const history = getHistoryParse(state)
     const list = await getCurrentCalendar()
     const promptSchedule = generateSchedulePrompt(list?.length ? list : 'ninguna', history, prompts.agendar)
-
+    await typing(ctx, provider)
     const text = await ai.createChat([
         {
             role: 'system',

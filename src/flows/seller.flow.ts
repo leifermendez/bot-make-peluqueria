@@ -3,6 +3,7 @@ import { generateTimer } from "../utils/generateTimer";
 import { getHistoryParse, handleHistory } from "../utils/handleHistory";
 import AIClass from "../services/ai";
 import { getFullCurrentDate } from "src/utils/currentDate";
+import { query } from "src/stack";
 
 export const generatePromptSeller = (history: string, prompt: string) => {
     const nowDate = getFullCurrentDate()
@@ -18,10 +19,9 @@ const flowSeller = addKeyword(EVENTS.ACTION).addAction(async (_, { state, flowDy
         const ai = extensions.ai as AIClass
         const prompts = extensions.prompts
         const history = getHistoryParse(state)
-        const prompt = generatePromptSeller(history, prompts.hablar)
-
-        console.log(`---------------------promtp hablar --------------------------`)
-        console.log(prompt)
+        const dataDb = await query({ "in-0": history })
+        const prompt = generatePromptSeller(history, prompts.hablar).replace('{DATABASE}', dataDb)
+        console.log({ prompt })
 
         const text = await ai.createChat([
             {

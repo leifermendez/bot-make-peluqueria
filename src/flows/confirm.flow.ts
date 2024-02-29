@@ -3,6 +3,7 @@ import AIClass from "../services/ai";
 import { clearHistory, handleHistory, getHistoryParse } from "../utils/handleHistory";
 import { getFullCurrentDate } from "../utils/currentDate";
 import { appToCalendar } from "src/services/calendar";
+import { typing } from "src/utils/composing";
 
 const generatePromptToFormatDate = (history: string) => {
     const prompt = `Fecha de Hoy:${getFullCurrentDate()}, Basado en el Historial de conversacion: 
@@ -23,7 +24,7 @@ const generateJsonParse = (info: string) => {
         "interest": "n/a",
         "value": "0",
         "email": "fef@fef.com",
-        "startDate": "2024/02/15 00:00:00"
+        "startDate": "2024/02/15 00:00:00" asegurate que la fecha siempre contenga YYYY/MM/DD hh:mm:ss
     }
     
     Objeto JSON a generar:`
@@ -34,13 +35,13 @@ const generateJsonParse = (info: string) => {
 /**
  * Encargado de pedir los datos necesarios para registrar el evento en el calendario
  */
-const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic }) => {
+const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (ctx, { flowDynamic }) => {
     await flowDynamic('Ok, voy a pedirte unos datos para agendar')
     await flowDynamic('¿Cual es tu nombre?')
-}).addAction({ capture: true }, async (ctx, { state, flowDynamic, extensions }) => {
+}).addAction({ capture: true }, async (ctx, { state, flowDynamic, extensions, provider }) => {
     await state.update({ name: ctx.body })
     const ai = extensions.ai as AIClass
-
+    await typing(ctx, provider)
     const history = getHistoryParse(state)
     const text = await ai.createChat([
         {
