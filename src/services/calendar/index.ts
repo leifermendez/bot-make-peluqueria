@@ -1,4 +1,4 @@
-import { format, addMinutes } from 'date-fns'
+import { format, addMinutes, parseISO, isValid } from 'date-fns'
 import { MAKE_ADD_TO_CALENDAR, MAKE_GET_FROM_CALENDAR } from 'src/config'
 
 /**
@@ -10,7 +10,13 @@ const getCurrentCalendar = async (): Promise<string> => {
     const json: any[] = await dataCalendarApi.json()
     const list = json.reduce((prev, current) => {
 
+        console.log({ current })
+
         if (!current.fecha) return prev
+        const parsedDate = parseISO(current.fecha);
+        const valid = isValid(parsedDate);
+
+        if (!valid) return prev
 
         return prev += [
             `Espacio reservado (no disponible): `,

@@ -23,7 +23,7 @@ const generateJsonParse = (info: string) => {
         "interest": "n/a",
         "value": "0",
         "email": "fef@fef.com",
-        "startDate": "2024/02/15 00:00:00"
+        "startDate": "2024/02/15 00:00:00" (asegurate de dar la respuesta de fecha en este formato)
     }
     
     Objeto JSON a generar:`
