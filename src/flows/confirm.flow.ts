@@ -14,18 +14,17 @@ const generatePromptToFormatDate = (history: string) => {
 }
 
 const generateJsonParse = (info: string) => {
-    const prompt = `tu tarea principal es analizar la información proporcionada en el contexto y generar un objeto JSON que se adhiera a la estructura especificada a continuación. 
-
+    const prompt = `Como experto en la creación de prompts, tu principal tarea es analizar la información proporcionada en el contexto y generar un objeto JSON. Es crucial que este objeto se adhiera estrictamente a la estructura especificada a continuación. Asegúrate de que todos los campos estén presentes y que la información proporcionada cumpla con el formato establecido.
     Contexto: "${info}"
+    Ejemplo de objeto JSON:
     
-    {
-        "name": "Leifer",
-        "interest": "n/a",
-        "value": "0",
-        "email": "fef@fef.com",
-        "startDate": "2024/02/15 00:00:00" (asegurate de dar la respuesta de fecha en este formato)
-    }
+        {
+            "name": "Leifer",
+            "email": "fef@fef.com",
+            "startDate": "2024/02/15 00:00:00" 
+        }
     
+    Nota: Para el campo "startDate", asegúrate de proporcionar la fecha en el formato exacto mostrado ("YYYY/MM/DD HH:MM:SS").
     Objeto JSON a generar:`
 
     return prompt
@@ -50,10 +49,15 @@ const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic 
     ], 'gpt-4')
 
     await handleHistory({ content: text, role: 'assistant' }, state)
-    await flowDynamic(`¿Me confirmas fecha y hora?: ${text}`)
+    await flowDynamic(`¿Me confirmas fecha y hora?: ${text}. **cancelar** para iniciar de nuevo`)
     await state.update({ startDate: text })
 })
-    .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
+        if (ctx.body.toLocaleLowerCase().includes('cancelar')) {
+            clearHistory(state)
+            return endFlow()
+
+        }
         await flowDynamic(`Ultima pregunta ¿Cual es tu email?`)
     })
     .addAction({ capture: true }, async (ctx, { state, extensions, flowDynamic }) => {
