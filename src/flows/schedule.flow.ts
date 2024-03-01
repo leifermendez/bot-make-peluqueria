@@ -53,6 +53,9 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
     const list = await getCurrentCalendar()
     const promptSchedule = generateSchedulePrompt(list?.length ? list : 'ninguna', history, prompts.agendar)
 
+    console.log(`-------------------------agendar---------------------------------`)
+    console.log(promptSchedule)
+
     const text = await ai.createChat([
         {
             role: 'system',

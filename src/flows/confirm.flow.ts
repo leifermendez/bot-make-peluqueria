@@ -60,7 +60,12 @@ const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic 
         }
         await flowDynamic(`Ultima pregunta ¿Cual es tu email?`)
     })
-    .addAction({ capture: true }, async (ctx, { state, extensions, flowDynamic }) => {
+    .addAction({ capture: true }, async (ctx, { state, extensions, flowDynamic, fallBack }) => {
+
+        if (!ctx.body.includes('@')) {
+            return fallBack(`Debes ingresar un mail correcto`)
+        }
+
         const infoCustomer = `Name: ${state.get('name')}, StarteDate: ${state.get('startDate')}, email: ${ctx.body}`
         const ai = extensions.ai as AIClass
 
