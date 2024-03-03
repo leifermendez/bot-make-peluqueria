@@ -10,20 +10,16 @@ const getCurrentCalendar = async (): Promise<string> => {
     const json: any[] = await dataCalendarApi.json()
     const list = json.reduce((prev, current) => {
 
-
         if (!current.fecha) return prev
         const parsedDate = parse(current.fecha, 'yyyy/MM/dd HH:mm:ss', new Date());
         const valid = isValid(parsedDate);
-
-        console.log({ current: current.fecha, valid })
-
-
         if (!valid) return prev
 
+        const dateStart = format(parsedDate, 'yyyy MMMM d EEEE HH:mm')
+        const dateEnd = format(addMinutes(parsedDate, 45), 'yyyy MMMM d EEEE HH:mm')
+
         return prev += [
-            `Espacio reservado (no disponible): `,
-            `Desde ${format(current.fecha, 'eeee do h:mm a')} `,
-            `Hasta ${format(addMinutes(current.fecha, 45), 'eeee do h:mm a')} \n`,
+            `Reserved space (not available) between the following times : ${dateStart} -- ${dateEnd}\n `
         ].join(' ')
     }, '')
     return list

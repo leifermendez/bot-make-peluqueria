@@ -5,18 +5,17 @@ import { getFullCurrentDate } from "../utils/currentDate";
 import { appToCalendar } from "src/services/calendar";
 
 const generatePromptToFormatDate = (history: string) => {
-    const prompt = `Fecha de Hoy:${getFullCurrentDate()}, Basado en el Historial de conversacion: 
-    ${history}
-    ----------------
-    Fecha ideal:...dd / mm hh:mm`
-
+    const prompt = `Current date: ${getFullCurrentDate()}, Given conversation history: 
+    \n${history} \n
+    Desired date (format: YYYY/MM/DD hh:mm:ss):
+    `
     return prompt
 }
 
 const generateJsonParse = (info: string) => {
-    const prompt = `Como experto en la creación de prompts, tu principal tarea es analizar la información proporcionada en el contexto y generar un objeto JSON. Es crucial que este objeto se adhiera estrictamente a la estructura especificada a continuación. Asegúrate de que todos los campos estén presentes y que la información proporcionada cumpla con el formato establecido.
-    Contexto: "${info}"
-    Ejemplo de objeto JSON:
+    const prompt = `As an expert in creating prompts, your main task is to parse the information provided in the context and generate a JSON object. It is crucial that this object strictly adheres to the structure specified below. Make sure that all fields are present and that the information provided complies with the given format.
+    Context:"${info}"
+    Example JSON object:
     
         {
             "name": "Leifer",
@@ -24,8 +23,8 @@ const generateJsonParse = (info: string) => {
             "startDate": "2024/02/15 00:00:00" 
         }
     
-    Nota: Para el campo "startDate", asegúrate de proporcionar la fecha en el formato exacto mostrado ("YYYY/MM/DD HH:MM:SS").
-    Objeto JSON a generar:`
+    Note: For the "startDate" field, be sure to provide the date in the exact format shown ("YYYYY/MM/DD HH:MM:SS").
+    JSON object to generate:`
 
     return prompt
 }
@@ -55,7 +54,7 @@ const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic 
     .addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
         if (ctx.body.toLocaleLowerCase().includes('cancelar')) {
             clearHistory(state)
-            return endFlow()
+            return endFlow(`¿Como puedo ayudarte?`)
 
         }
         await flowDynamic(`Ultima pregunta ¿Cual es tu email?`)
